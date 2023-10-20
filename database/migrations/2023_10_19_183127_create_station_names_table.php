@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,10 +12,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('station_names', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::create(
+            'station_names',
+            function (Blueprint $table) {
+                $table->uuid('id')->primary()->default(DB::raw('UUID()'));
+                $table->string('stationName')->nullable(false)->comment('Station Name');
+                $table->string('line')->nullable(false)->comment('Station line name');
+                $table->string('latitude')->nullable(false)->comment('Station latitude');
+                $table->string('longitude')->nullable(false)->comment('Station longitude');
+                $table->enum('status', ['active', 'disable'])->default('active');
+                $table->timestamps();
+            }
+        );
+
+        Artisan::call(
+            'db:seed',
+            [
+                '--class' => 'DelhiMetroSeeder',
+                '--force' => 'true'
+            ]
+        );
     }
 
     /**
