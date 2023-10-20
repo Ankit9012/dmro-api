@@ -18,10 +18,17 @@ class StationController extends Controller
     function getStationNames(Request $request)
     {
 
-        $stations = StationNames::select('id', 'stationName')
+        $stations = StationNames::select(
+            'id',
+            'stationName',
+            'line',
+            'latitude',
+            'longitude'
+        )
             ->where('stationName', 'like',  '%' . $request->name . '%')
             ->orderBy("stationName")
-            ->paginate();
+            ->paginate((int) $request->limit);
+
         return response()->json(
             [
                 'data' => $stations,
@@ -70,6 +77,37 @@ class StationController extends Controller
         }
     }
 
+
+    /**Get Metro Line names */
+
+    function getMetroLines(Request $request)
+    {
+
+        try {
+            $request->validate([
+                'name' => 'nullable|string',
+            ]);
+
+            $lineName = StationNames::select('line')->orderBy('line', 'asc')
+                ->groupBy('line')
+                ->paginate((int) $request->limit);
+
+
+            return response()->json(
+                [
+                    'data' => $lineName,
+                ],
+                200
+            );
+        } catch (\Throwable $throwable) {
+            return response()->json(
+                [
+                    'error' => $throwable->getMessage(),
+                ],
+                500
+            );
+        }
+    }
 
     function getStatusMessage($statusCode)
     {

@@ -18,15 +18,23 @@ use Illuminate\Support\Facades\Route;
 Route::group(
     ["prefix" => "/v1"],
     function () {
+
+        /**GET Station Name */
         Route::get(
             "getStationNames",
             [StationController::class, "getStationNames"]
         )->name("getStationNames");
 
 
+        /**Get station in between */
         Route::post(
             "getRoute",
             [StationController::class, "getStationBetween"]
         )->name("getRoute");
+
+        Route::get(
+            'lines',
+            [StationController::class, 'getMetroLines']
+        )->name('lines');
     }
 );

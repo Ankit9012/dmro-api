@@ -18,8 +18,8 @@ return new class extends Migration
                 $table->uuid('id')->primary()->default(DB::raw('UUID()'));
                 $table->string('stationName')->nullable(false)->comment('Station Name');
                 $table->string('line')->nullable(false)->comment('Station line name');
-                $table->string('latitude')->nullable(false)->comment('Station latitude');
-                $table->string('longitude')->nullable(false)->comment('Station longitude');
+                $table->string('latitude')->nullable(true)->default(0)->comment('Station latitude');
+                $table->string('longitude')->nullable(true)->default(0)->comment('Station longitude');
                 $table->enum('status', ['active', 'disable'])->default('active');
                 $table->timestamps();
             }
