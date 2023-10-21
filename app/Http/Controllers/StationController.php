@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StationNames;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class StationController extends Controller
 {
@@ -74,7 +75,6 @@ class StationController extends Controller
     }
 
     /**Get Metro Line names */
-
     public function getMetroLines(Request $request)
     {
 
@@ -84,6 +84,7 @@ class StationController extends Controller
             ]);
 
             $lineName = StationNames::select('line')->orderBy('line', 'asc')
+                ->where('line', 'like', '%'.$request->name.'%')
                 ->groupBy('line')
                 ->paginate((int) $request->limit);
 
@@ -118,6 +119,69 @@ class StationController extends Controller
                 return 'Invalid destination.';
             case 406:
                 return 'Invalid source and destination.';
+        }
+    }
+
+    /**
+     * Get Nearby Metro stations by co-ordinates
+     */
+    public function getStationsNearby(Request $request)
+    {
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'lat' => 'required|string',
+                    'long' => 'required|string',
+                ],
+                [
+                    'lat.required' => 'Latitude(lat) co-ordinate is required ',
+                    'long.required' => 'Longitude(long) co-ordinate is required',
+                ]
+            )->validate();
+
+            $latitude = $request->lat;
+            $longitude = $request->long;
+
+            $nearbyAPI = getenv('NEARBY_API');
+            $nearbyAPI .= '?lat='.$latitude;
+            $nearbyAPI .= '&long='.$longitude;
+
+            $response = Http::withHeaders(
+                [
+                    'X-RapidAPI-Key' => getenv('NEARBY_API_KEY'),
+                    'X-RapidAPI-Host' => getenv('NEARBY_API_HOST'),
+                ]
+            )->get($nearbyAPI);
+
+            if ($response->getStatusCode() == 200) {
+                $stations = json_decode($response->getBody())->data;
+                $data = [];
+                foreach ($stations as $station) {
+                    $stationName = $station->station_name;
+                    unset($station->station_name);
+                    $data[] = [
+                        ...json_decode(json_encode($station), true),
+                        'name' => $stationName,
+                    ];
+                }
+
+                return response()->json(
+                    [
+                        'data' => $data,
+                        'message' => 'success',
+                    ],
+                    200
+                );
+            }
+        } catch (\Throwable $throwable) {
+            return response()->json(
+                [
+                    'messgae' => $throwable->getMessage(),
+                    'error' => $throwable->getTrace(),
+                ],
+                500
+            );
         }
     }
 }

@@ -15,24 +15,31 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(
-    ['prefix' => '/v1'],
+    ['prefix' => '/v1/station'],
     function () {
 
         /**GET Station Name */
         Route::get(
-            'getStationNames',
+            'names',
             [StationController::class, 'getStationNames']
-        )->name('getStationNames');
+        )->name('names');
 
         /**Get station in between */
         Route::post(
-            'getRoute',
+            'route',
             [StationController::class, 'getStationBetween']
-        )->name('getRoute');
+        )->name('route');
 
+        /**Get Metro Lines */
         Route::get(
             'lines',
             [StationController::class, 'getMetroLines']
         )->name('lines');
+
+        /**Get Nearby Metro Stations */
+        Route::get(
+            'nearby',
+            [StationController::class, 'getStationsNearby']
+        )->name('nearby');
     }
 );
