@@ -29,7 +29,7 @@ return new class extends Migration
             'db:seed',
             [
                 '--class' => 'DelhiMetroSeeder',
-                '--force' => 'true'
+                '--force' => 'true',
             ]
         );
     }

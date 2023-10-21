@@ -9,13 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 class StationNames extends Model
 {
     use HasFactory, HasUuids;
+
     protected $keyType = 'string';
+
     protected $fillables = [
-        "id",
-        "stationName",
-        "line",
-        "latitude",
-        "longitude",
-        "status"
+        'id',
+        'stationName',
+        'line',
+        'latitude',
+        'longitude',
+        'status',
     ];
 }

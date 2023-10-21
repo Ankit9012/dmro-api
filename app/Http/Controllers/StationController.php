@@ -8,14 +8,12 @@ use Illuminate\Support\Facades\Http;
 
 class StationController extends Controller
 {
-
     /**
      * Summary of getStationNames
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    function getStationNames(Request $request)
+    public function getStationNames(Request $request)
     {
 
         $stations = StationNames::select(
@@ -25,20 +23,19 @@ class StationController extends Controller
             'latitude',
             'longitude'
         )
-            ->where('stationName', 'like',  '%' . $request->name . '%')
-            ->orderBy("stationName")
+            ->where('stationName', 'like', '%'.$request->name.'%')
+            ->orderBy('stationName')
             ->paginate((int) $request->limit);
 
         return response()->json(
             [
                 'data' => $stations,
-                'message' => 'Test'
+                'message' => 'Test',
             ]
         );
     }
 
-
-    function getStationBetween(Request $request)
+    public function getStationBetween(Request $request)
     {
         try {
 
@@ -49,22 +46,21 @@ class StationController extends Controller
                 ]
             );
 
-
             $stationFrom = $request->stationFrom;
             $stationTo = $request->stationTo;
 
-            $apiEndpoint = "https://us-central1-delhimetroapi.cloudfunctions.net/";
-            $apiEndpoint .= "route-get?";
+            $apiEndpoint = 'https://us-central1-delhimetroapi.cloudfunctions.net/';
+            $apiEndpoint .= 'route-get?';
             $apiEndpoint .= "from=$stationFrom&";
             $apiEndpoint .= "to=$stationTo";
 
-
             $response = Http::get($apiEndpoint);
             $data = json_decode($response->getBody(), true);
+
             return response()->json(
                 [
-                    "data" => $data,
-                    'message' => $this->getStatusMessage($data['status'])
+                    'data' => $data,
+                    'message' => $this->getStatusMessage($data['status']),
                 ],
                 $data['status'] == 200 ? 200 : 500,
             );
@@ -77,10 +73,9 @@ class StationController extends Controller
         }
     }
 
-
     /**Get Metro Line names */
 
-    function getMetroLines(Request $request)
+    public function getMetroLines(Request $request)
     {
 
         try {
@@ -91,7 +86,6 @@ class StationController extends Controller
             $lineName = StationNames::select('line')->orderBy('line', 'asc')
                 ->groupBy('line')
                 ->paginate((int) $request->limit);
-
 
             return response()->json(
                 [
@@ -109,21 +103,21 @@ class StationController extends Controller
         }
     }
 
-    function getStatusMessage($statusCode)
+    public function getStatusMessage($statusCode)
     {
         switch ($statusCode) {
             case 200:
-                return "Result succesfully generated.";
+                return 'Result succesfully generated.';
             case 204:
-                return "Same source and destination.";
+                return 'Same source and destination.';
             case 400:
-                return "Undefined source or destination.";
+                return 'Undefined source or destination.';
             case 4061:
-                return "Invalid source.";
+                return 'Invalid source.';
             case 4062:
-                return "Invalid destination.";
+                return 'Invalid destination.';
             case 406:
-                return "Invalid source and destination.";
+                return 'Invalid source and destination.';
         }
     }
 }

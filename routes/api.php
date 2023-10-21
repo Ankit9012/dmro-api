@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\StationController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,21 +15,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(
-    ["prefix" => "/v1"],
+    ['prefix' => '/v1'],
     function () {
 
         /**GET Station Name */
         Route::get(
-            "getStationNames",
-            [StationController::class, "getStationNames"]
-        )->name("getStationNames");
-
+            'getStationNames',
+            [StationController::class, 'getStationNames']
+        )->name('getStationNames');
 
         /**Get station in between */
         Route::post(
-            "getRoute",
-            [StationController::class, "getStationBetween"]
-        )->name("getRoute");
+            'getRoute',
+            [StationController::class, 'getStationBetween']
+        )->name('getRoute');
 
         Route::get(
             'lines',
