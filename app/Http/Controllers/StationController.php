@@ -19,13 +19,13 @@ class StationController extends Controller
 
         $stations = StationNames::select(
             'id',
-            'stationName',
+            'name',
             'line',
             'latitude',
             'longitude'
         )
-            ->where('stationName', 'like', '%'.$request->name.'%')
-            ->orderBy('stationName')
+            ->where('name', 'like', '%'.$request->name.'%')
+            ->orderBy('name')
             ->paginate((int) $request->limit);
 
         return response()->json(
